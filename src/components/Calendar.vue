@@ -1,5 +1,5 @@
 <template>
-  <v-group :config="gridConfig" ref="grid">
+  <v-group :config="gridConfig" ref="grid" @dragend="dragGrid">
     <v-text :config="titleConfig"></v-text>
     <v-text
       :config="textConfig(item,i + 1)"
@@ -33,6 +33,7 @@ export default {
   methods: {
     dragGrid (e) {
       const { x, y } = this.$refs.grid.getNode().getClientRect()
+      console.log({ x, y })
       Object.assign(this.gridConfig, { x, y })
     },
     generateCalendarArr (firstDayWeekDay, totalDay) {
@@ -73,13 +74,16 @@ export default {
     }
   },
   watch: {
-    dateObject (newDate) {
-      console.log('init')
-      this.year = newDate.getFullYear()
-      this.month = newDate.getMonth() + 1
-      const firstDayWeekDay = this.zellerCongruence(this.year, this.month, 1)
-      const totalDay = this.countMonthDays(this.year, this.month)
-      this.generateCalendarArr(firstDayWeekDay, totalDay)
+    dateObject: {
+      immediate: true,
+      handler (newDate) {
+        console.log('init')
+        this.year = newDate.getFullYear()
+        this.month = newDate.getMonth() + 1
+        const firstDayWeekDay = this.zellerCongruence(this.year, this.month, 1)
+        const totalDay = this.countMonthDays(this.year, this.month)
+        this.generateCalendarArr(firstDayWeekDay, totalDay)
+      }
     }
   }
 }
