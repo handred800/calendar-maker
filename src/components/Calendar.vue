@@ -1,26 +1,12 @@
 <template>
-  <v-layer>
-    <v-group :config="gridConfig" ref="grid" @dragend="dragGrid">
-      <v-text
-        :config="{
-          text: `${year}年 ${month}月`
-        }"
-      ></v-text>
-      <v-text
-        :config="{
-          x: Math.floor((i - 1) % 7) * 30 + gap,
-          y: Math.floor((i - 1) / 7) * 30 + gap * 2 + fontSize,
-          width: 30,
-          height: 30,
-          fontSize: fontSize,
-          fill: 'hotpink',
-          text: i
-        }"
-        v-for="i in count"
-        :key="i"
-      ></v-text>
-    </v-group>
-  </v-layer>
+  <v-group :config="gridConfig" ref="grid">
+    <v-text :config="titleConfig"></v-text>
+    <v-text
+      :config="textConfig(item,i + 1)"
+      v-for="(item,i) in calendarGridArr"
+      :key="i"
+    ></v-text>
+  </v-group>
 </template>
 
 <script>
@@ -28,8 +14,8 @@ import dateCounter from '@/plugins/dateCounter.js'
 export default {
   props: {
     dateObject: Date,
-    fontSize: Number,
-    gap: Number
+    gap: Number,
+    styleConfig: Object
   },
   mixins: [dateCounter],
   data () {
@@ -49,21 +35,51 @@ export default {
       const { x, y } = this.$refs.grid.getNode().getClientRect()
       Object.assign(this.gridConfig, { x, y })
     },
-    generateCalendarArr (firstDayWeekDay,dayCount) {
+    generateCalendarArr (firstDayWeekDay, totalDay) {
       this.calendarGridArr = []
-      for(let i; i <= daycount; i++) {
-        let newItem = []
-        this.calendarGridArr.push(newItem);
+      const converter = this.weekXYConverter(firstDayWeekDay)
+
+      for (let day = 1; day <= totalDay; day++) {
+        this.calendarGridArr.push(converter(day))
+      }
+    },
+    textConfig (item, text) {
+      const vm = this
+      return {
+        x: item[0] * vm.styleConfig.fontSize * 2 + vm.gap,
+        y: item[1] * vm.styleConfig.fontSize * 2 + vm.gap * 2 + vm.styleConfig.fontSize,
+        width: vm.styleConfig.fontSize * 2,
+        height: vm.styleConfig.fontSize * 2,
+        fontSize: vm.styleConfig.fontSize,
+        fontFamily: 'Noto Sans TC',
+        align: 'center',
+        fill: 'hotpink',
+        text
+      }
+    }
+  },
+  computed: {
+    titleConfig () {
+      const vm = this
+
+      const text = vm.styleConfig.titleShowYear ? `${vm.year}年 ${vm.month}月` : `${vm.month}月`
+      return {
+        x: vm.gap,
+        y: vm.gap,
+        fontSize: vm.styleConfig.fontSize,
+        fontFamily: 'Noto Sans TC',
+        text
       }
     }
   },
   watch: {
     dateObject (newDate) {
+      console.log('init')
       this.year = newDate.getFullYear()
       this.month = newDate.getMonth() + 1
       const firstDayWeekDay = this.zellerCongruence(this.year, this.month, 1)
-      const dayCount = this.countMonthDays(this.year, this.month)
-      this.generateCalendarArr(firstDayWeekDay, dayCount)
+      const totalDay = this.countMonthDays(this.year, this.month)
+      this.generateCalendarArr(firstDayWeekDay, totalDay)
     }
   }
 }

@@ -1,7 +1,7 @@
 export default {
   methods: {
     countMonthDays (year, month) {
-      return /3|5|8|10/.test(month) ? 30 : month === 1 ? ((!(year % 4) && year % 100) || !(year % 400) ? 29 : 28) : 31
+      return /4|6|9|11/.test(month) ? 30 : month === 2 ? ((!(year % 4) && year % 100) || !(year % 400) ? 29 : 28) : 31
     },
     zellerCongruence (year, month, day) {
       // 蔡勒公式中 1, 2 月視為前一年的 13, 14 月
@@ -19,6 +19,10 @@ export default {
       if (w < 0) w = (w & (7 + 7)) % 7
       else w = w % 7
       return w
+    },
+    weekXYConverter (firstDayWeekDay) {
+      const offsetX = firstDayWeekDay - 1
+      return (day) => [Math.floor((day + offsetX) % 7), Math.floor((day + offsetX) / 7)]
     }
   }
 }
