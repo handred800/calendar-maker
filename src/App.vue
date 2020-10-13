@@ -2,7 +2,7 @@
   <div id="app">
     <el-form>
       <el-form-item label="圖片">
-        <el-upload action="/" :auto-upload="false" :limit="1" accept="jpg,png" :show-file-list="false" :on-change="uploadImage">
+        <el-upload action="/" :auto-upload="false" :limit="1" accept=".jpeg,.jpg,.png" :show-file-list="false" :on-change="uploadImage" :on-exceed="uploadImage">
           <el-button type="primary">上傳圖片</el-button>
           <div slot="tip" class="el-upload__tip">圖檔不大於1MB</div>
         </el-upload>
@@ -14,14 +14,33 @@
           placeholder="選擇年月">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="字級大小">
-        <el-input-number v-model="styleConfig.fontSize" controls-position="right" :min="12" :max="20"></el-input-number>
+      <el-form-item label="字級大小(標題)">
+        <el-input-number size="small" v-model="styleConfig.titleFontsize" controls-position="right" :min="12" :max="20"></el-input-number>
+      </el-form-item>
+      <el-form-item label="字級大小(日期)">
+        <el-input-number size="small" v-model="styleConfig.fontSize" controls-position="right" :min="12" :max="20"></el-input-number>
       </el-form-item>
       <el-form-item label="間距">
-        <el-input-number v-model="gap" controls-position="right" :min="0" :max="15"></el-input-number>
+        <el-input-number size="small" v-model="gap" controls-position="right" :min="0" :max="15"></el-input-number>
       </el-form-item>
       <el-form-item label="背景色">
         <el-color-picker v-model="canvasColor"></el-color-picker>
+      </el-form-item>
+      <el-form-item label="標題(年月)色">
+        <el-color-picker v-model="styleConfig.titleColor"></el-color-picker>
+      </el-form-item>
+      <el-form-item label="日期色(平日)">
+        <el-color-picker v-model="styleConfig.weekdayColor"></el-color-picker>
+      </el-form-item>
+      <el-form-item label="日期色(假日)">
+        <el-color-picker v-model="styleConfig.weekendColor"></el-color-picker>
+      </el-form-item>
+      <el-form-item>
+        <el-switch
+          v-model="styleConfig.titleShowYear"
+          active-text="年月"
+          inactive-text="月">
+        </el-switch>
       </el-form-item>
       <v-stage ref="stage" :config="configStage">
         <v-layer>
@@ -60,18 +79,18 @@ export default {
       styleConfig: {
         lang: '',
         fontSize: 14,
-        titleFontsize: '',
-        titleColor: '',
+        titleFontsize: 14,
+        titleColor: '#515151',
         titleShowYear: true,
-        dateFontsize: '',
-        weekdayColor: '',
-        weekendColor: ''
+        dateFontsize: 14,
+        weekdayColor: '#515151',
+        weekendColor: '#F85AB6'
       }
     }
   },
   methods: {
     uploadImage (file) {
-      const imageUrl = URL.createObjectURL(file.raw)
+      const imageUrl = (file[0] === undefined) ? URL.createObjectURL(file.raw) : URL.createObjectURL(file[0])
       const img = new Image()
       img.src = imageUrl
       img.onload = () => {

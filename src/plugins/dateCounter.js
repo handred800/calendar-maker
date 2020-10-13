@@ -22,7 +22,13 @@ export default {
     },
     weekXYConverter (firstDayWeekDay) {
       const offsetX = firstDayWeekDay - 1
-      return (day) => [Math.floor((day + offsetX) % 7), Math.floor((day + offsetX) / 7)]
+      return (day) => {
+        const dayData = {
+          pos: [Math.floor((day + offsetX) % 7), Math.floor((day + offsetX) / 7)],
+          isWeekend: Math.floor((day + offsetX) % 7) === 6 || Math.floor((day + offsetX) % 7) === 0
+        }
+        return dayData
+      }
     }
   }
 }

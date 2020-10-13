@@ -47,14 +47,14 @@ export default {
     textConfig (item, text) {
       const vm = this
       return {
-        x: item[0] * vm.styleConfig.fontSize * 2 + vm.gap,
-        y: item[1] * vm.styleConfig.fontSize * 2 + vm.gap * 2 + vm.styleConfig.fontSize,
+        x: item.pos[0] * vm.styleConfig.fontSize * 2 + vm.gap,
+        y: item.pos[1] * vm.styleConfig.fontSize * 2 + vm.gap * 2 + vm.styleConfig.fontSize,
         width: vm.styleConfig.fontSize * 2,
         height: vm.styleConfig.fontSize * 2,
         fontSize: vm.styleConfig.fontSize,
         fontFamily: 'Noto Sans TC',
         align: 'center',
-        fill: 'hotpink',
+        fill: item.isWeekend ? vm.styleConfig.weekendColor : vm.styleConfig.weekdayColor,
         text
       }
     }
@@ -62,13 +62,14 @@ export default {
   computed: {
     titleConfig () {
       const vm = this
-
       const text = vm.styleConfig.titleShowYear ? `${vm.year}年 ${vm.month}月` : `${vm.month}月`
       return {
         x: vm.gap,
         y: vm.gap,
-        fontSize: vm.styleConfig.fontSize,
+        fontSize: vm.styleConfig.titleFontsize,
         fontFamily: 'Noto Sans TC',
+        align: 'center',
+        fill: vm.styleConfig.titleColor,
         text
       }
     }
@@ -77,7 +78,6 @@ export default {
     dateObject: {
       immediate: true,
       handler (newDate) {
-        console.log('init')
         this.year = newDate.getFullYear()
         this.month = newDate.getMonth() + 1
         const firstDayWeekDay = this.zellerCongruence(this.year, this.month, 1)

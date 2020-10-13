@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Upload, Button, DatePicker, InputNumber, ColorPicker, Link, Form, FormItem } from 'element-ui'
+import { Upload, Button, DatePicker, InputNumber, ColorPicker, Link, Form, FormItem, Switch } from 'element-ui'
 import lang from 'element-ui/lib/locale/lang/zh-TW'
 import locale from 'element-ui/lib/locale'
 
@@ -13,3 +13,4 @@ Vue.use(ColorPicker)
 Vue.use(Link)
 Vue.use(Form)
 Vue.use(FormItem)
+Vue.use(Switch)
