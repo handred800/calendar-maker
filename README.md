@@ -3,32 +3,38 @@
 - 月曆網格(TODO:星期,標題位置)
 - 上傳圖片
 - 下載圖片
-- 設定顏色樣式
+- 設定月曆樣式
 
 ## 📋TODO
 - 月曆網格
-    - 標題置中(左右)
-    - 星期設定
+    - 周次
     - 假日導入
     - 月/周中英表示
-    - 將陣列項目修改成物件，不放入xy應該用index + offset去推算座標  
-      (e.g. {isWeekDay: true})
 - 設定 canvas
     - mobile,pc 尺寸
     - 圖片縮放、拖曳限制
 
 ## ✍️功能註解
 - 月曆網格  
-    - daycount: 當月天數 
-    - firstDayWeekDay: 當月第一天是星期幾 (0為星期日)  
-    - calendarGridArr: 月曆陣列，vue 依此陣列渲染月曆 
-    - generateCalendarArr 規則 **(待調整)**:  
-        依據 firstDayWeekDay 產生出陣列第一項，例: firstDayWeekDay=1 第一項為[0,1] (星期二，第一行的二格)  
-        再依據 daycount 自動生成剩下的陣列項目
+    - **daycount**: 當月天數  
+    - **offset**: 日期與格數的偏移量  
+      依據 **zellerCongruence** (蔡勒公式)求出第1日是星期幾，星期幾 - 1 = offset
+    - 月曆生成規則:  
+        目標: 用*迴圈的 index(即日期)* 換算出繪製canvas所需的 *xy座標*  
+        1. 用 **daycount** 迴圈生成 xy座標
+        2. 迴圈內執行 index + offset = 第幾格
+        3. x = 第幾格 % 7 ; y = Math.celi(第幾格 / 7)  
+           例 第5格: 
+           - x = 5 % 7 = 5  
+           - y = Math.floor(5 / 7) = Math.floor(0.71...) = 0  
+        4. 以上不儲存直接用 computed 返回  
+        
 - 月曆樣式(styleConfig)
-    - titleShowYear
     - titleFontsize
     - titleColor
+    - titleAlign
+    - titleShowYear
     - dateFontsize
     - weekdayColor
     - weekendColor
+    

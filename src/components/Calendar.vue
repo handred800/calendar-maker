@@ -1,11 +1,16 @@
 <template>
-  <v-group :config="gridConfig" ref="grid" @dragend="dragGrid">
+  <v-group :config="gridConfig" ref="grid" @mouseenter="hover(true)" @mouseleave="hover(false)" @dragend="dragGrid">
     <v-text :config="titleConfig"></v-text>
-    <v-text
-      :config="textConfig(item,i + 1)"
-      v-for="(item,i) in calendarGridArr"
-      :key="i"
-    ></v-text>
+    <v-group :config="{
+      x: gap,
+      y: gap * 2 + styleConfig.titleFontsize * 2
+    }">
+      <v-text
+        :config="textConfig(index)"
+        v-for="index in totalDay"
+        :key="index"
+      ></v-text>
+    </v-group>
   </v-group>
 </template>
 
@@ -22,7 +27,9 @@ export default {
     return {
       year: 0,
       month: 0,
-      calendarGridArr: [],
+      // calendarGridArr: [],
+      totalDay: 0,
+      offset: 0,
       gridConfig: {
         x: 0,
         y: 0,
@@ -36,26 +43,32 @@ export default {
       console.log({ x, y })
       Object.assign(this.gridConfig, { x, y })
     },
-    generateCalendarArr (firstDayWeekDay, totalDay) {
-      this.calendarGridArr = []
-      const converter = this.weekXYConverter(firstDayWeekDay)
-
-      for (let day = 1; day <= totalDay; day++) {
-        this.calendarGridArr.push(converter(day))
-      }
+    hover (isHover) {
+      this.$emit('hover', isHover)
     },
-    textConfig (item, text) {
+    // generateCalendarArr (firstDayWeekDay, totalDay) {
+    //   this.calendarGridArr = []
+    //   const converter = this.weekXYConverter(firstDayWeekDay)
+
+    //   for (let day = 1; day <= totalDay; day++) {
+    //     this.calendarGridArr.push(converter(day))
+    //   }
+    // },
+    textConfig (day) {
       const vm = this
+      // 算出該日是第幾格
+      const dayAddOffset = day + vm.offset
+      // 月曆第一格(左上)為 [0,0]
       return {
-        x: item.pos[0] * vm.styleConfig.fontSize * 2 + vm.gap,
-        y: item.pos[1] * vm.styleConfig.fontSize * 2 + vm.gap * 2 + vm.styleConfig.fontSize,
-        width: vm.styleConfig.fontSize * 2,
-        height: vm.styleConfig.fontSize * 2,
-        fontSize: vm.styleConfig.fontSize,
+        x: (dayAddOffset % 7) * vm.styleConfig.dateFontsize * 2,
+        y: Math.floor(dayAddOffset / 7) * vm.styleConfig.dateFontsize * 2,
+        width: vm.styleConfig.dateFontsize * 2,
+        height: vm.styleConfig.dateFontsize * 2,
+        fontSize: vm.styleConfig.dateFontsize,
         fontFamily: 'Noto Sans TC',
-        align: 'center',
-        fill: item.isWeekend ? vm.styleConfig.weekendColor : vm.styleConfig.weekdayColor,
-        text
+        align: vm.styleConfig.textAlign,
+        fill: (dayAddOffset % 7) === 6 || (dayAddOffset % 7) === 0 ? vm.styleConfig.weekendColor : vm.styleConfig.weekdayColor,
+        text: day
       }
     }
   },
@@ -64,11 +77,11 @@ export default {
       const vm = this
       const text = vm.styleConfig.titleShowYear ? `${vm.year}年 ${vm.month}月` : `${vm.month}月`
       return {
-        x: vm.gap,
-        y: vm.gap,
+        // padding: vm.styleConfig.dateFontsize / 2 + vm.gap,
+        width: vm.styleConfig.dateFontsize * 2 * 7,
         fontSize: vm.styleConfig.titleFontsize,
         fontFamily: 'Noto Sans TC',
-        align: 'center',
+        align: vm.styleConfig.titleAlign,
         fill: vm.styleConfig.titleColor,
         text
       }
@@ -80,9 +93,10 @@ export default {
       handler (newDate) {
         this.year = newDate.getFullYear()
         this.month = newDate.getMonth() + 1
-        const firstDayWeekDay = this.zellerCongruence(this.year, this.month, 1)
-        const totalDay = this.countMonthDays(this.year, this.month)
-        this.generateCalendarArr(firstDayWeekDay, totalDay)
+        // zellerCongruence 算出當年當月1日為星期幾，再推出 offset (之後用來推算某日為第幾格)
+        this.offset = this.zellerCongruence(this.year, this.month, 1) - 1
+        this.totalDay = this.countMonthDays(this.year, this.month)
+        // this.generateCalendarArr(firstDayWeekDay, totalDay)
       }
     }
   }

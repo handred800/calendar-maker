@@ -1,3 +1,28 @@
 body {
     font-family: 'Noto Sans TC', sans-serif;
+    margin: 0;
+    user-select: none;
+}
+// elementUI overwrite
+.el-aside{overflow-x: hidden;}
+.el-scrollbar{height: calc(100vh - 60px);}
+.el-collapse-item__header{
+    padding: 0 1em;
+    font-size: 1em;
+}
+.el-collapse-item__content{
+    padding: 1em;
+    background-color: #f3f3f3;
+}
+
+// canvas
+.konvajs-content{
+    margin: auto;
+    border: 1px solid hotpink;
+}
+
+#btn-download{
+    display: block;
+    margin: auto;
+    color: #fff;
 }

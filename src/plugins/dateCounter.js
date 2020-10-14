@@ -19,16 +19,15 @@ export default {
       if (w < 0) w = (w & (7 + 7)) % 7
       else w = w % 7
       return w
-    },
-    weekXYConverter (firstDayWeekDay) {
-      const offsetX = firstDayWeekDay - 1
-      return (day) => {
-        const dayData = {
-          pos: [Math.floor((day + offsetX) % 7), Math.floor((day + offsetX) / 7)],
-          isWeekend: Math.floor((day + offsetX) % 7) === 6 || Math.floor((day + offsetX) % 7) === 0
-        }
-        return dayData
-      }
     }
+    // weekXYConverter (firstDayWeekDay) {
+    //   const offset = firstDayWeekDay - 1
+    //   return (day) => {
+    //     const dayData = {
+    //       isWeekend: (day + offset) % 7 === 6 || Math.floor((day + offset) % 7) === 0
+    //     }
+    //     return dayData
+    //   }
+    // }
   }
 }
