@@ -41,7 +41,6 @@ export default {
     dragGrid (e) {
       const { x, y } = this.$refs.grid.getNode().getClientRect()
       console.log({ x, y })
-      Object.assign(this.gridConfig, { x, y })
     },
     hover (isHover) {
       this.$emit('hover', isHover)
@@ -65,8 +64,8 @@ export default {
         width: vm.styleConfig.dateFontsize * 2,
         height: vm.styleConfig.dateFontsize * 2,
         fontSize: vm.styleConfig.dateFontsize,
-        fontFamily: 'Noto Sans TC',
-        align: vm.styleConfig.textAlign,
+        fontFamily: vm.styleConfig.font,
+        align: 'center',
         fill: (dayAddOffset % 7) === 6 || (dayAddOffset % 7) === 0 ? vm.styleConfig.weekendColor : vm.styleConfig.weekdayColor,
         text: day
       }
@@ -75,12 +74,25 @@ export default {
   computed: {
     titleConfig () {
       const vm = this
-      const text = vm.styleConfig.titleShowYear ? `${vm.year}年 ${vm.month}月` : `${vm.month}月`
+      const text = ((type) => {
+        const m = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'][vm.month - 1]
+        switch (type) {
+          case 'ch':
+            return vm.styleConfig.titleShowYear ? `${vm.year}年 ${vm.month}月` : `${vm.month}月`
+          case 'en':
+            return vm.styleConfig.titleShowYear ? `${vm.year} ${m}` : m
+          case 'num':
+            return vm.styleConfig.titleShowYear ? `${vm.year} . ${vm.month}` : vm.month
+          default:
+            break
+        }
+      })(vm.styleConfig.titleType)
+
       return {
-        // padding: vm.styleConfig.dateFontsize / 2 + vm.gap,
-        width: vm.styleConfig.dateFontsize * 2 * 7,
+        padding: vm.styleConfig.dateFontsize / 2 + vm.gap,
+        width: vm.styleConfig.dateFontsize * 2 * 7 + vm.gap * 2,
         fontSize: vm.styleConfig.titleFontsize,
-        fontFamily: 'Noto Sans TC',
+        fontFamily: vm.styleConfig.font,
         align: vm.styleConfig.titleAlign,
         fill: vm.styleConfig.titleColor,
         text

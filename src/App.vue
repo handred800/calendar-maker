@@ -27,6 +27,7 @@
                       v-model="yearMonth"
                       type="month"
                       placeholder="選擇年月"
+                      :clearable="false"
                     >
                     </el-date-picker>
                   </el-form-item>
@@ -42,6 +43,12 @@
                       :max="15"
                     ></el-input-number>
                   </el-form-item>
+                  <el-form-item label="字型">
+                    <el-radio-group v-model="styleConfig.font" size="medium">
+                      <el-radio-button label="Noto Sans TC">思源黑體</el-radio-button>
+                      <el-radio-button label="Noto Serif TC">思源宋體</el-radio-button>
+                    </el-radio-group>
+                  </el-form-item>
                 </el-collapse-item>
                 <el-collapse-item title="年月設定" name="1">
                   <el-form-item label="對齊">
@@ -49,6 +56,13 @@
                       <el-radio-button label="left">置左</el-radio-button>
                       <el-radio-button label="center">置中</el-radio-button>
                       <el-radio-button label="right">置右</el-radio-button>
+                    </el-radio-group>
+                  </el-form-item>
+                  <el-form-item label="類型">
+                    <el-radio-group v-model="styleConfig.titleType" size="medium">
+                      <el-radio-button label="ch">中文</el-radio-button>
+                      <el-radio-button label="en">英文</el-radio-button>
+                      <el-radio-button label="num">數字</el-radio-button>
                     </el-radio-group>
                   </el-form-item>
                   <el-form-item label="字級大小">
@@ -113,14 +127,15 @@
           </el-scrollbar>
         </el-aside>
         <el-main>
-          <v-stage ref="stage" :config="configStage">
+          <v-stage ref="stage" :config="configStage" @wheel="resizeImage">
             <v-layer>
               <v-rect
                 :config="Object.assign({ fill: canvasColor }, configStage)"
               ></v-rect>
               <v-image
-                v-if="imageObject"
-                :config="{ image: imageObject, draggable: true }"
+                ref="image"
+                v-if="imageConfig.image"
+                :config="imageConfig"
                 @mouseenter="dragHover(true)"
                 @mouseleave="dragHover(false)"
               ></v-image>
@@ -136,9 +151,9 @@
             id="btn-download"
             class="el-button el-button--primary"
             :href="downloadLink"
-            v-if="imageObject"
+            v-if="imageConfig.image"
             icon="el-icon-download"
-            download="圖片"
+            :download="`月曆 ${yearMonth.getFullYear()}-${yearMonth.getMonth()+1}`"
             @mouseenter.native="updateDownloadLink"
             >下載</el-link
           >
@@ -158,21 +173,30 @@ export default {
   },
   data () {
     return {
-      imageObject: null,
+      imageConfig: {
+        image: null,
+        x: 0,
+        y: 0,
+        scaleX: 1,
+        scaleY: 1,
+        draggable: true
+      },
       downloadLink: '',
       canvasColor: '#fff',
       yearMonth: new Date(),
-      gap: 0,
+      gap: 10,
       configStage: {
         width: 500,
         height: 500
       },
       styleConfig: {
         lang: '',
-        titleFontsize: 14,
+        font: 'Noto Sans TC',
+        titleFontsize: 16,
         titleColor: '#515151',
         titleAlign: 'center',
         titleShowYear: true,
+        titleType: 'ch',
         weekColor: '#515151',
         weekShow: false,
         weekType: 'ch',
@@ -188,11 +212,38 @@ export default {
       const img = new Image()
       img.src = imageUrl
       img.onload = () => {
-        this.imageObject = img
+        this.imageConfig.image = img
       }
     },
     updateDownloadLink () {
       this.downloadLink = this.$refs.stage.getNode().toDataURL({ pixelRatio: 3 })
+    },
+    resizeImage (e) {
+      if (!this.imageConfig.image) return
+      e.evt.preventDefault()
+      const stage = this.$refs.stage.getNode()
+      const image = this.$refs.image.getNode()
+      const oldScale = this.imageConfig.scaleX
+      const pointer = stage.getPointerPosition()
+
+      const mousePointTo = {
+        x: (pointer.x - image.x()) / oldScale,
+        y: (pointer.y - image.y()) / oldScale
+      }
+      const delta = Math.sign(e.evt.wheelDelta) / 10
+      const newScale = oldScale + delta <= 0.3 ? 0.3 : oldScale + delta >= 4 ? 4 : oldScale + delta
+
+      const newPos = {
+        x: pointer.x - mousePointTo.x * newScale,
+        y: pointer.y - mousePointTo.y * newScale
+      }
+
+      Object.assign(this.imageConfig, {
+        x: newPos.x,
+        y: newPos.y,
+        scaleX: newScale,
+        scaleY: newScale
+      })
     },
     dragHover (isHover) {
       const style = isHover ? 'move' : 'default'

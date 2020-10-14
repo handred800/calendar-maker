@@ -4,15 +4,17 @@
 - 上傳圖片
 - 下載圖片
 - 設定月曆樣式
+- 圖片縮放
 
 ## 📋TODO
 - 月曆網格
     - 周次
-    - 假日導入
-    - 月/周中英表示
 - 設定 canvas
     - mobile,pc 尺寸
-    - 圖片縮放、拖曳限制
+    - 拖曳限制(保留)
+- 優化
+    - snap 拖拉吸附
+    - 假日導入
 
 ## ✍️功能註解
 - 月曆網格  
@@ -30,11 +32,16 @@
         4. 以上不儲存直接用 computed 返回  
         
 - 月曆樣式(styleConfig)
+    - font
     - titleFontsize
     - titleColor
     - titleAlign
     - titleShowYear
+    - titleType
     - dateFontsize
     - weekdayColor
     - weekendColor
+    - [ ] weekColor
+    - [ ] weekShow
+    - [ ] weekType
     
