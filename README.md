@@ -11,6 +11,9 @@
     - 周次
 - 設定 canvas
     - 拖曳限制(保留)
+- 加入Unsplash source
+    - random image
+    - spcific image (解析網址取ID)    
 - 優化
     - snap 拖拉吸附
     - 假日導入
