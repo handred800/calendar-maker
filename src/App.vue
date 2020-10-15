@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <el-container>
-      <el-header></el-header>
+      <el-header>
+        <h1 class="brand">📅 月曆製造</h1>
+      </el-header>
       <el-container>
         <el-aside width="400px">
           <el-scrollbar>
@@ -37,7 +39,7 @@
                   <el-form-item label="間距">
                     <el-input-number
                       size="small"
-                      v-model="gap"
+                      v-model="styleConfig.gap"
                       controls-position="right"
                       :min="0"
                       :max="15"
@@ -47,7 +49,24 @@
                     <el-radio-group v-model="styleConfig.font" size="medium">
                       <el-radio-button label="Noto Sans TC">思源黑體</el-radio-button>
                       <el-radio-button label="Noto Serif TC">思源宋體</el-radio-button>
+                      <el-radio-button label="HunInn">粉圓體</el-radio-button>
+                      <el-radio-button label="Zpix">最像素</el-radio-button>
                     </el-radio-group>
+                  </el-form-item>
+                  <el-form-item label="輸出尺寸">
+                    <el-select v-model="outputConfig" value-key="device" placeholder="請選擇" @change="resetStage">
+                      <el-option-group
+                        v-for="group in deviceResolution"
+                        :key="group.label"
+                        :label="group.label">
+                        <el-option
+                          v-for="item in group.options"
+                          :key="item.device"
+                          :label="item.device"
+                          :value="item">
+                        </el-option>
+                      </el-option-group>
+                    </el-select>
                   </el-form-item>
                 </el-collapse-item>
                 <el-collapse-item title="年月設定" name="1">
@@ -71,7 +90,7 @@
                       v-model="styleConfig.titleFontsize"
                       controls-position="right"
                       :min="12"
-                      :max="20"
+                      :max="24"
                     ></el-input-number>
                   </el-form-item>
                   <el-form-item label="顏色">
@@ -127,10 +146,10 @@
           </el-scrollbar>
         </el-aside>
         <el-main>
-          <v-stage ref="stage" :config="configStage" @wheel="resizeImage">
+          <v-stage ref="stage" :config="outputConfig" @wheel="resizeImage">
             <v-layer>
               <v-rect
-                :config="Object.assign({ fill: canvasColor }, configStage)"
+                :config="Object.assign({ fill: canvasColor }, outputConfig)"
               ></v-rect>
               <v-image
                 ref="image"
@@ -140,8 +159,8 @@
                 @mouseleave="dragHover(false)"
               ></v-image>
               <Calendar
+                ref="calendar"
                 :dateObject="yearMonth"
-                :gap="gap"
                 :styleConfig="styleConfig"
                 @hover="dragHover"
               />
@@ -164,13 +183,15 @@
 </template>
 
 <script>
-import Calendar from './components/Calendar.vue'
+import Calendar from '@/components/Calendar.vue'
+import deviceResolution from '@/mixins/deviceResolution.vue'
 
 export default {
   name: 'app',
   components: {
     Calendar
   },
+  mixins: [deviceResolution],
   data () {
     return {
       imageConfig: {
@@ -184,13 +205,9 @@ export default {
       downloadLink: '',
       canvasColor: '#fff',
       yearMonth: new Date(),
-      gap: 10,
-      configStage: {
-        width: 500,
-        height: 500
-      },
       styleConfig: {
         lang: '',
+        gap: 10,
         font: 'Noto Sans TC',
         titleFontsize: 16,
         titleColor: '#515151',
@@ -203,6 +220,12 @@ export default {
         dateFontsize: 14,
         weekdayColor: '#515151',
         weekendColor: '#F85AB6'
+      },
+      outputConfig: {
+        device: '1920*1080',
+        width: 960,
+        height: 540,
+        pixelRatio: 2
       }
     }
   },
@@ -219,6 +242,8 @@ export default {
       this.downloadLink = this.$refs.stage.getNode().toDataURL({ pixelRatio: 3 })
     },
     resizeImage (e) {
+      const minScale = 0.1
+      const maxScale = 5
       if (!this.imageConfig.image) return
       e.evt.preventDefault()
       const stage = this.$refs.stage.getNode()
@@ -230,8 +255,8 @@ export default {
         x: (pointer.x - image.x()) / oldScale,
         y: (pointer.y - image.y()) / oldScale
       }
-      const delta = Math.sign(e.evt.wheelDelta) / 10
-      const newScale = oldScale + delta <= 0.3 ? 0.3 : oldScale + delta >= 4 ? 4 : oldScale + delta
+      const delta = Math.sign(e.evt.wheelDelta) / 50
+      const newScale = oldScale + delta <= minScale ? minScale : oldScale + delta >= maxScale ? maxScale : oldScale + delta
 
       const newPos = {
         x: pointer.x - mousePointTo.x * newScale,
@@ -248,6 +273,9 @@ export default {
     dragHover (isHover) {
       const style = isHover ? 'move' : 'default'
       this.$refs.stage.getNode().container().style.cursor = style
+    },
+    resetStage () {
+      this.$refs.calendar.reset()
     }
   }
 }

@@ -2,8 +2,8 @@
   <v-group :config="gridConfig" ref="grid" @mouseenter="hover(true)" @mouseleave="hover(false)" @dragend="dragGrid">
     <v-text :config="titleConfig"></v-text>
     <v-group :config="{
-      x: gap,
-      y: gap * 2 + styleConfig.titleFontsize * 2
+      x: styleConfig.gap,
+      y: styleConfig.gap * 2 + styleConfig.titleFontsize * 2
     }">
       <v-text
         :config="textConfig(index)"
@@ -15,11 +15,10 @@
 </template>
 
 <script>
-import dateCounter from '@/plugins/dateCounter.js'
+import dateCounter from '@/mixins/dateCounter.vue'
 export default {
   props: {
     dateObject: Date,
-    gap: Number,
     styleConfig: Object
   },
   mixins: [dateCounter],
@@ -27,7 +26,6 @@ export default {
     return {
       year: 0,
       month: 0,
-      // calendarGridArr: [],
       totalDay: 0,
       offset: 0,
       gridConfig: {
@@ -40,19 +38,16 @@ export default {
   methods: {
     dragGrid (e) {
       const { x, y } = this.$refs.grid.getNode().getClientRect()
-      console.log({ x, y })
+      this.gridConfig.x = x
+      this.gridConfig.y = y
     },
     hover (isHover) {
       this.$emit('hover', isHover)
     },
-    // generateCalendarArr (firstDayWeekDay, totalDay) {
-    //   this.calendarGridArr = []
-    //   const converter = this.weekXYConverter(firstDayWeekDay)
-
-    //   for (let day = 1; day <= totalDay; day++) {
-    //     this.calendarGridArr.push(converter(day))
-    //   }
-    // },
+    reset () {
+      this.gridConfig.x = 0
+      this.gridConfig.y = 0
+    },
     textConfig (day) {
       const vm = this
       // 算出該日是第幾格
@@ -64,6 +59,7 @@ export default {
         width: vm.styleConfig.dateFontsize * 2,
         height: vm.styleConfig.dateFontsize * 2,
         fontSize: vm.styleConfig.dateFontsize,
+        fontStyle: vm.styleConfig.font === 'HunInn' ? 'bold' : 'normal',
         fontFamily: vm.styleConfig.font,
         align: 'center',
         fill: (dayAddOffset % 7) === 6 || (dayAddOffset % 7) === 0 ? vm.styleConfig.weekendColor : vm.styleConfig.weekdayColor,
@@ -89,8 +85,9 @@ export default {
       })(vm.styleConfig.titleType)
 
       return {
-        padding: vm.styleConfig.dateFontsize / 2 + vm.gap,
-        width: vm.styleConfig.dateFontsize * 2 * 7 + vm.gap * 2,
+        padding: vm.styleConfig.dateFontsize / 2 + vm.styleConfig.gap,
+        width: vm.styleConfig.dateFontsize * 2 * 7 + vm.styleConfig.gap * 2,
+        fontStyle: vm.styleConfig.font === 'HunInn' ? 'bold' : 'normal',
         fontSize: vm.styleConfig.titleFontsize,
         fontFamily: vm.styleConfig.font,
         align: vm.styleConfig.titleAlign,
@@ -108,7 +105,6 @@ export default {
         // zellerCongruence 算出當年當月1日為星期幾，再推出 offset (之後用來推算某日為第幾格)
         this.offset = this.zellerCongruence(this.year, this.month, 1) - 1
         this.totalDay = this.countMonthDays(this.year, this.month)
-        // this.generateCalendarArr(firstDayWeekDay, totalDay)
       }
     }
   }

@@ -1,3 +1,5 @@
+
+<script>
 export default {
   methods: {
     countMonthDays (year, month) {
@@ -20,14 +22,6 @@ export default {
       else w = w % 7
       return w
     }
-    // weekXYConverter (firstDayWeekDay) {
-    //   const offset = firstDayWeekDay - 1
-    //   return (day) => {
-    //     const dayData = {
-    //       isWeekend: (day + offset) % 7 === 6 || Math.floor((day + offset) % 7) === 0
-    //     }
-    //     return dayData
-    //   }
-    // }
   }
 }
+</script>

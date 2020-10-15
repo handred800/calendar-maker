@@ -11,6 +11,9 @@ import {
   Form,
   FormItem,
   Switch,
+  Select,
+  Option,
+  OptionGroup,
   RadioGroup,
   RadioButton,
   Container,
@@ -36,6 +39,9 @@ Vue.use(CollapseItem)
 Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Switch)
+Vue.use(Select)
+Vue.use(Option)
+Vue.use(OptionGroup)
 Vue.use(RadioGroup)
 Vue.use(RadioButton)
 Vue.use(Container)
