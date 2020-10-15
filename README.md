@@ -5,10 +5,11 @@
 - 設定月曆樣式
 - 圖片縮放
 - 輸出尺寸設定(待完善)
+- 基本周次(待完善)
 
 ## 📋TODO
 - 月曆網格
-    - 周次
+    - 周次(單色? 小字級)
 - 設定 canvas
     - 拖曳限制(保留)
 - 加入Unsplash source
@@ -43,7 +44,6 @@
     - dateFontsize
     - weekdayColor
     - weekendColor
-    - [ ] weekColor
     - [ ] weekShow
     - [ ] weekType
     

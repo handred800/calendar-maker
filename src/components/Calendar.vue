@@ -4,6 +4,12 @@
     <v-group :config="{
       x: styleConfig.gap,
       y: styleConfig.gap * 2 + styleConfig.titleFontsize * 2
+    }" v-if="styleConfig.weekShow">
+      <v-text :config="textConfig(index, text, false)" v-for="(text, index) in weekTextArr" :key="text"></v-text>
+    </v-group>
+    <v-group :config="{
+      x: styleConfig.gap,
+      y: gridMarginTop
     }">
       <v-text
         :config="textConfig(index)"
@@ -48,10 +54,10 @@ export default {
       this.gridConfig.x = 0
       this.gridConfig.y = 0
     },
-    textConfig (day) {
+    textConfig (day, text, needOffset = true) {
       const vm = this
       // 算出該日是第幾格
-      const dayAddOffset = day + vm.offset
+      const dayAddOffset = needOffset ? day + vm.offset : day
       // 月曆第一格(左上)為 [0,0]
       return {
         x: (dayAddOffset % 7) * vm.styleConfig.dateFontsize * 2,
@@ -63,7 +69,7 @@ export default {
         fontFamily: vm.styleConfig.font,
         align: 'center',
         fill: (dayAddOffset % 7) === 6 || (dayAddOffset % 7) === 0 ? vm.styleConfig.weekendColor : vm.styleConfig.weekdayColor,
-        text: day
+        text: text || day
       }
     }
   },
@@ -94,6 +100,20 @@ export default {
         fill: vm.styleConfig.titleColor,
         text
       }
+    },
+    weekTextArr () {
+      switch (this.styleConfig.weekType) {
+        case 'ch':
+          return ['日', '一', '二', '三', '四', '五', '六']
+        case 'en':
+          return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+        default:
+          return []
+      }
+    },
+    gridMarginTop () {
+      const basic = this.styleConfig.gap * 2 + this.styleConfig.titleFontsize * 2
+      return this.styleConfig.weekShow ? basic + this.styleConfig.dateFontsize * 2 : basic
     }
   },
   watch: {

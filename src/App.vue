@@ -105,8 +105,17 @@
                     </el-switch>
                   </el-form-item>
                 </el-collapse-item>
-                <el-collapse-item title="周設定" name="2">
-                  <el-form-item>
+                <el-collapse-item title="日期設定" name="2">
+                  <el-form-item label="字級大小(日期)">
+                    <el-input-number
+                      size="small"
+                      v-model="styleConfig.dateFontsize"
+                      controls-position="right"
+                      :min="12"
+                      :max="20"
+                    ></el-input-number>
+                  </el-form-item>
+                  <el-form-item label="星期">
                     <el-switch
                       v-model="styleConfig.weekShow"
                       active-text="顯示"
@@ -119,20 +128,6 @@
                       <el-radio-button label="ch">中文</el-radio-button>
                       <el-radio-button label="en">英文</el-radio-button>
                     </el-radio-group>
-                  </el-form-item>
-                  <el-form-item label="顏色">
-                    <el-color-picker v-model="styleConfig.weekColor"></el-color-picker>
-                  </el-form-item>
-                </el-collapse-item>
-                <el-collapse-item title="日期設定" name="3">
-                  <el-form-item label="字級大小(日期)">
-                    <el-input-number
-                      size="small"
-                      v-model="styleConfig.dateFontsize"
-                      controls-position="right"
-                      :min="12"
-                      :max="20"
-                    ></el-input-number>
                   </el-form-item>
                   <el-form-item label="顏色(平日)">
                     <el-color-picker v-model="styleConfig.weekdayColor"></el-color-picker>
@@ -214,7 +209,6 @@ export default {
         titleAlign: 'center',
         titleShowYear: true,
         titleType: 'ch',
-        weekColor: '#515151',
         weekShow: false,
         weekType: 'ch',
         dateFontsize: 14,
