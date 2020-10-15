@@ -47,10 +47,10 @@
                   </el-form-item>
                   <el-form-item label="字型">
                     <el-radio-group v-model="styleConfig.font" size="medium">
-                      <el-radio-button label="Noto Sans TC">思源黑體</el-radio-button>
-                      <el-radio-button label="Noto Serif TC">思源宋體</el-radio-button>
-                      <el-radio-button label="HunInn">粉圓體</el-radio-button>
-                      <el-radio-button label="Zpix">最像素</el-radio-button>
+                      <el-radio-button label="Noto Sans TC" style="font-family: 'Noto Sans TC'">思源黑體</el-radio-button>
+                      <el-radio-button label="Noto Serif TC" style="font-family: 'Noto Serif TC'">思源宋體</el-radio-button>
+                      <el-radio-button label="HunInn" style="font-family: 'HunInn'">粉圓體</el-radio-button>
+                      <el-radio-button label="Zpix" style="font-family: 'Zpix'">最像素</el-radio-button>
                     </el-radio-group>
                   </el-form-item>
                   <el-form-item label="輸出尺寸">
