@@ -15,12 +15,12 @@
                       action="/"
                       :auto-upload="false"
                       :limit="1"
-                      accept=".jpeg,.jpg,.png"
+                      accept=".jpeg,.jpg,.png,.JPG,.JPEG,.PNG"
                       :show-file-list="false"
                       :on-change="uploadImage"
                       :on-exceed="uploadImage"
                     >
-                      <el-button type="primary">上傳圖片</el-button>
+                      <el-button type="primary" icon="el-icon-upload2">上傳圖片</el-button>
                       <div slot="tip" class="el-upload__tip">圖檔不大於1MB</div>
                     </el-upload>
                   </el-form-item>
@@ -70,6 +70,14 @@
                   </el-form-item>
                 </el-collapse-item>
                 <el-collapse-item title="年月設定" name="1">
+                  <el-form-item>
+                    <el-switch
+                      v-model="styleConfig.titleShowYear"
+                      active-text="年月"
+                      inactive-text="月"
+                    >
+                    </el-switch>
+                  </el-form-item>
                   <el-form-item label="對齊">
                     <el-radio-group v-model="styleConfig.titleAlign" size="medium">
                       <el-radio-button label="left">置左</el-radio-button>
@@ -95,14 +103,6 @@
                   </el-form-item>
                   <el-form-item label="顏色">
                     <el-color-picker v-model="styleConfig.titleColor"></el-color-picker>
-                  </el-form-item>
-                  <el-form-item>
-                    <el-switch
-                      v-model="styleConfig.titleShowYear"
-                      active-text="年月"
-                      inactive-text="月"
-                    >
-                    </el-switch>
                   </el-form-item>
                 </el-collapse-item>
                 <el-collapse-item title="日期設定" name="2">
@@ -136,41 +136,65 @@
                     <el-color-picker v-model="styleConfig.weekendColor"></el-color-picker>
                   </el-form-item>
                 </el-collapse-item>
+                <el-collapse-item title="Unsplash">
+                  <p><el-link type="primary" href="https://unsplash.com/" target="_blank">Unsplash</el-link> 是一個免授權的照片分享平台</p>
+                  <el-form-item label="圖片尺寸">
+                    <el-radio-group v-model="unsplashConfig.size" size="medium" @change="unsplashUrlCreator">
+                      <el-radio-button label="2560x1440">橫向(16:9)</el-radio-button>
+                      <el-radio-button label="1080x1920">直向(9:16)</el-radio-button>
+                    </el-radio-group>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-input
+                      class="input-with-select"
+                      :placeholder="unsplashConfig.type === 'keyword' ? '請輸入關鍵字，建議使用英文' : '請填入Unsplash相片網址'"
+                      v-model="unsplashConfig.text"
+                      @keyup.enter.native="unsplashUrlCreator"
+                    >
+                      <el-select slot="prepend" v-model="unsplashConfig.type" @change="unsplashConfig.text=''">
+                        <el-option label="關鍵字" value="keyword"></el-option>
+                        <el-option label="網址" value="url"></el-option>
+                      </el-select>
+                    </el-input>
+                    <div class="text-muted">輸入完後按下 Enter 送出</div>
+                  </el-form-item>
+                </el-collapse-item>
               </el-collapse>
             </el-form>
           </el-scrollbar>
         </el-aside>
         <el-main>
-          <v-stage ref="stage" :config="outputConfig" @wheel="resizeImage">
-            <v-layer>
-              <v-rect
-                :config="Object.assign({ fill: canvasColor }, outputConfig)"
-              ></v-rect>
-              <v-image
-                ref="image"
-                v-if="imageConfig.image"
-                :config="imageConfig"
-                @mouseenter="dragHover(true)"
-                @mouseleave="dragHover(false)"
-              ></v-image>
-              <Calendar
-                ref="calendar"
-                :dateObject="yearMonth"
-                :styleConfig="styleConfig"
-                @hover="dragHover"
-              />
-            </v-layer>
-          </v-stage>
-          <el-link
-            id="btn-download"
-            class="el-button el-button--primary"
-            :href="downloadLink"
-            v-if="imageConfig.image"
-            icon="el-icon-download"
-            :download="`月曆 ${yearMonth.getFullYear()}-${yearMonth.getMonth()+1}`"
-            @mouseenter.native="updateDownloadLink"
-            >下載</el-link
-          >
+          <div>
+            <v-stage v-loading="imageIsLoading" element-loading-text="圖片載入中" ref="stage" :config="outputConfig" @wheel="resizeImage">
+              <v-layer>
+                <v-rect
+                  :config="Object.assign({ fill: canvasColor }, outputConfig)"
+                ></v-rect>
+                <v-image
+                  ref="image"
+                  v-if="imageConfig.image"
+                  :config="imageConfig"
+                  @mouseenter="dragHover(true)"
+                  @mouseleave="dragHover(false)"
+                ></v-image>
+                <Calendar
+                  ref="calendar"
+                  :dateObject="yearMonth"
+                  :styleConfig="styleConfig"
+                  @hover="dragHover"
+                />
+              </v-layer>
+            </v-stage>
+            <el-link
+              id="btn-download"
+              class="el-button el-button--primary"
+              :href="downloadLink"
+              v-if="imageConfig.image"
+              icon="el-icon-download"
+              :download="`月曆 ${yearMonth.getFullYear()}-${yearMonth.getMonth()+1}`"
+              @mouseenter.native="updateDownloadLink"
+              >下載</el-link>
+          </div>
         </el-main>
       </el-container>
     </el-container>
@@ -179,8 +203,9 @@
 
 <script>
 import Calendar from '@/components/Calendar.vue'
+// mixin
 import deviceResolution from '@/mixins/deviceResolution.vue'
-
+import { throttle } from '@/mixins/D&T.js'
 export default {
   name: 'app',
   components: {
@@ -189,6 +214,7 @@ export default {
   mixins: [deviceResolution],
   data () {
     return {
+      imageIsLoading: false,
       imageConfig: {
         image: null,
         x: 0,
@@ -220,16 +246,54 @@ export default {
         width: 960,
         height: 540,
         pixelRatio: 2
+      },
+      unsplashConfig: {
+        type: 'keyword',
+        text: '',
+        size: '2560x1440'
       }
     }
   },
   methods: {
     uploadImage (file) {
       const imageUrl = file[0] === undefined ? URL.createObjectURL(file.raw) : URL.createObjectURL(file[0])
+      this.createImageObject(imageUrl)
+    },
+    unsplashUrlCreator: throttle(function () {
+      const config = this.unsplashConfig
+      if (config.text === '') return
+      let url = 'https://source.unsplash.com/'
+
+      switch (this.unsplashConfig.type) {
+        case 'keyword':
+          url += `${config.size}/?${config.text}/${Math.random() * 100}`
+          break
+        case 'url':
+          if (config.text.includes('https://unsplash.com/photos/')) {
+            url += `${config.text.replace('https://unsplash.com/photos/', '')}/${config.size}`
+          } else {
+            this.$notify({
+              title: '錯誤的網址',
+              type: 'error',
+              position: 'bottom-left',
+              duration: 1000
+            })
+            return
+          }
+          break
+        default:
+          break
+      }
+      this.createImageObject(url)
+    }, 1000),
+    createImageObject (url) {
+      this.imageIsLoading = true
       const img = new Image()
-      img.src = imageUrl
+      img.src = url
+      img.crossOrigin = 'Anonymous'
       img.onload = () => {
         this.imageConfig.image = img
+        this.imageIsLoading = false
       }
     },
     updateDownloadLink () {

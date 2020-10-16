@@ -28,6 +28,12 @@ body {
         height: calc(100vh - 60px);
     }
 }
+.el-main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
 .el-collapse-item__header{
     padding: 0 1em;
     font-size: 1em;
@@ -35,6 +41,9 @@ body {
 .el-collapse-item__content{
     padding: 1em;
     background-color: #f3f3f3;
+}
+.input-with-select .el-input-group__prepend .el-select{
+    min-width: 7em;
 }
 
 // canvas
@@ -45,14 +54,14 @@ body {
 
 #btn-download{
     display: block;
-    margin: auto;
     color: #fff;
 }
 
 // custom
 .brand{
     color: #fff;
-    font-family: 'HunInn';
     font-size: 1.3em;
-    font-weight: initial;
+}
+.text-muted{
+    color: grey;
 }

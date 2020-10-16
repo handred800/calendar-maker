@@ -5,7 +5,11 @@
       x: styleConfig.gap,
       y: styleConfig.gap * 2 + styleConfig.titleFontsize * 2
     }" v-if="styleConfig.weekShow">
-      <v-text :config="textConfig(index, text, false)" v-for="(text, index) in weekTextArr" :key="text"></v-text>
+      <v-text
+        :config="styleConfig.weekType === 'ch' ? textConfig(index, text, false) : Object.assign(textConfig(index, text, false), {fontSize: styleConfig.dateFontsize * .8})"
+        v-for="(text, index) in weekTextArr"
+        :key="text"
+      ></v-text>
     </v-group>
     <v-group :config="{
       x: styleConfig.gap,

@@ -1,4 +1,5 @@
-# 月曆製造
+# 月曆製造 Calendar Maker
+![預覽圖](./src/assets/preview.png)
 ## ✔️完成
 - 月曆網格
 - 上傳/下載圖片
@@ -6,18 +7,17 @@
 - 圖片縮放
 - 輸出尺寸設定(待完善)
 - 基本周次(待完善)
+- Unsplash 圖片(待完善)
 
 ## 📋TODO
-- 月曆網格
-    - 周次(單色? 小字級)
-- 設定 canvas
-    - 拖曳限制(保留)
-- 加入Unsplash source
-    - random image
-    - spcific image (解析網址取ID)    
-- 優化
-    - snap 拖拉吸附
-    - 假日導入
+-**Unsplash**
+    - Unsplash 標記創作者(全部改用[API 串接](https://unsplash.com/documentation#get-a-photo))
+    - Unsplash 圖片來源: 關鍵字隨機找圖要顯示原圖網址    
+- **i18n**
+- 圖片尺寸最適化 canvas
+- snap 圖片拖拉吸附
+- 假日導入
+- 快速色票
 
 ## ✍️功能註解
 - 月曆網格  
@@ -44,6 +44,16 @@
     - dateFontsize
     - weekdayColor
     - weekendColor
-    - [ ] weekShow
-    - [ ] weekType
-    
+    - weekShow
+    - weekType
+    - [ ] weekColor
+
+- Unsplash導入
+    - [Unsplash source](https://source.unsplash.com/)
+    - 整理背景圖讀取的流程，由上傳檔案(uploadImage) 或是 Unsplash(unsplashUrlCreator)  
+      最後都會進入到 createImageObject 來產出 image 物件給 canvas 使用  
+        1. uploadImage / unsplashUrlCreator 取出 url  
+        2. uploadImage 接收檔案 用 URL.createObjectURL(blob) 產生網址  
+           unsplashUrlCreator 接收字串並判斷是哪一種取用方式，組出對應的圖片網址  
+        3. createImageObject 接收網址產生 image 物件給 canvas
+    - unsplashUrlCreator 用 throttle 避免快速刷圖

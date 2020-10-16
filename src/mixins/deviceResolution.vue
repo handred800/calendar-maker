@@ -7,19 +7,19 @@ export default {
           label: 'iPhone',
           options: [
             {
-              device: '375*812(X)',
+              device: '1125*2436(X)',
               width: 375,
               height: 812,
               pixelRatio: 3
             },
             {
-              device: '414*736(6+ ~ 8+)',
+              device: '1242*2208(6+ ~ 8+)',
               width: 414,
               height: 736,
               pixelRatio: 3
             },
             {
-              device: '375*667(6 ~ 8)',
+              device: '1125*2001(6 ~ 8)',
               width: 375,
               height: 667,
               pixelRatio: 3
