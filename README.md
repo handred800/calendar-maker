@@ -1,16 +1,15 @@
 # 月曆製造 Calendar Maker
 ![預覽圖](./src/assets/preview.png)
-## ✔️完成
-- 月曆網格
-- 上傳/下載圖片
-- 設定月曆樣式
-- 圖片縮放
-- 輸出尺寸設定(待完善)
-- 基本周次(待完善)
-- Unsplash 圖片(待完善)
+## ✔️功能
+- 任何年月的月曆
+- 自訂月曆樣式
+- 上傳圖片
+- 串接 [Unsplash](https://unsplash.com/) 的專業攝影圖
+- 簡單的拖曳縮放排版
+- 輸出多種常見尺寸(歡迎提供輸出尺寸)
 
 ## 📋TODO
--**Unsplash**
+- **Unsplash**  
     - Unsplash 標記創作者(全部改用[API 串接](https://unsplash.com/documentation#get-a-photo))
     - Unsplash 圖片來源: 關鍵字隨機找圖要顯示原圖網址    
 - **i18n**
@@ -19,7 +18,7 @@
 - 假日導入
 - 快速色票
 
-## ✍️功能註解
+## ✍️註解
 - 月曆網格  
     - **daycount**: 當月天數  
     - **offset**: 日期與格數的偏移量  
