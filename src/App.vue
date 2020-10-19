@@ -137,11 +137,11 @@
                   </el-form-item>
                 </el-collapse-item>
                 <el-collapse-item title="Unsplash">
-                  <p><el-link type="primary" href="https://unsplash.com/" target="_blank">Unsplash</el-link> 是一個免授權的照片分享平台</p>
+                  <p><el-link type="primary" href="https://unsplash.com/" target="_blank"><img src="https://unsplash.com/assets/core/logo-black-df2168ed0c378fa5506b1816e75eb379d06cfcd0af01e07a2eb813ae9b5d7405.svg" style="height:1em; margin-right:5px;" alt=""> Unsplash</el-link> 是一個免授權的照片分享平台</p>
                   <el-form-item label="圖片尺寸">
-                    <el-radio-group v-model="unsplashConfig.size" size="medium" @change="unsplashUrlCreator">
-                      <el-radio-button label="2560x1440">橫向(16:9)</el-radio-button>
-                      <el-radio-button label="1080x1920">直向(9:16)</el-radio-button>
+                    <el-radio-group v-model="unsplashConfig.orientation" size="medium" @change="unsplashUrlCreator">
+                      <el-radio-button label="landscape">橫向(16:9)</el-radio-button>
+                      <el-radio-button label="portrait">直向(9:16)</el-radio-button>
                     </el-radio-group>
                   </el-form-item>
                   <el-form-item>
@@ -177,6 +177,10 @@
                   @mouseenter="dragHover(true)"
                   @mouseleave="dragHover(false)"
                 ></v-image>
+                <v-group v-if="this.unsplashConfig.text !== ''" :config="{ x: 0, y: outputConfig.height - 12 - 10 }">
+                  <v-rect :config="{ width: attrConfig.text.length * 6 + 10, height: 12 + 10, fill: '#fff', opacity: 0.5 }"></v-rect>
+                  <v-text :config="{ padding: 5, text: attrConfig.text }"></v-text>
+                </v-group>
                 <Calendar
                   ref="calendar"
                   :dateObject="yearMonth"
@@ -202,10 +206,15 @@
 </template>
 
 <script>
+// component
 import Calendar from '@/components/Calendar.vue'
 // mixin
 import deviceResolution from '@/mixins/deviceResolution.vue'
 import { throttle } from '@/mixins/D&T.js'
+// unsplash init
+import Unsplash, { toJson } from 'unsplash-js'
+const unsplash = new Unsplash({ accessKey: process.env.VUE_APP_APPKEY })
+
 export default {
   name: 'app',
   components: {
@@ -214,6 +223,7 @@ export default {
   mixins: [deviceResolution],
   data () {
     return {
+      imageAttr: '',
       imageIsLoading: false,
       imageConfig: {
         image: null,
@@ -250,29 +260,37 @@ export default {
       unsplashConfig: {
         type: 'keyword',
         text: '',
-        size: '2560x1440'
+        orientation: 'landscape'
       }
     }
   },
   methods: {
     uploadImage (file) {
+      this.unsplashConfig.text = ''
       const imageUrl = file[0] === undefined ? URL.createObjectURL(file.raw) : URL.createObjectURL(file[0])
       this.createImageObject(imageUrl)
     },
     unsplashUrlCreator: throttle(function () {
-      const config = this.unsplashConfig
+      const vm = this
+      vm.imageIsLoading = true
+      const config = vm.unsplashConfig
       if (config.text === '') return
-      let url = 'https://source.unsplash.com/'
+      let url = ''
 
-      switch (this.unsplashConfig.type) {
+      let method = ''
+      let options = null
+
+      switch (vm.unsplashConfig.type) {
         case 'keyword':
-          url += `${config.size}/?${config.text}/${Math.random() * 100}`
+          method = 'getRandomPhoto'
+          options = { query: vm.unsplashConfig.text, orientation: vm.unsplashConfig.orientation }
           break
         case 'url':
           if (config.text.includes('https://unsplash.com/photos/')) {
-            url += `${config.text.replace('https://unsplash.com/photos/', '')}/${config.size}`
+            method = 'getPhoto'
+            options = `${config.text.replace('https://unsplash.com/photos/', '')}/${config.size}`
           } else {
-            this.$notify({
+            vm.$notify({
               title: '錯誤的網址',
               type: 'error',
               position: 'bottom-left',
@@ -284,8 +302,22 @@ export default {
         default:
           break
       }
-      this.createImageObject(url)
-    }, 1000),
+      unsplash.photos[method](options)
+        .then(toJson)
+        .then((json) => {
+          vm.imageAttr = `Photo by ${json.user.name} on Unsplash`
+          url = json.urls.full
+          this.createImageObject(url)
+        }).catch((err) => {
+          console.log(err)
+          this.$notify({
+            title: '發生錯誤',
+            type: 'error',
+            position: 'bottom-left',
+            duration: 1000
+          })
+        })
+    }, 1500),
     createImageObject (url) {
       this.imageIsLoading = true
       const img = new Image()
@@ -334,6 +366,16 @@ export default {
     },
     resetStage () {
       this.$refs.calendar.reset()
+    }
+  },
+  computed: {
+    attrConfig () {
+      const padding = 5
+      return {
+        x: padding,
+        y: this.outputConfig.height - 12 - padding,
+        text: this.imageAttr
+      }
     }
   }
 }

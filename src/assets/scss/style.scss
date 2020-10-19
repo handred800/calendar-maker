@@ -50,6 +50,7 @@ body {
 .konvajs-content{
     margin: auto;
     border: 1px solid $brand-color;
+    box-shadow: 0 0 20px -3px rgba($brand-color,.15);
 }
 
 #btn-download{
