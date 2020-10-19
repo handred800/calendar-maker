@@ -16,7 +16,7 @@ export default {
               device: '1242*2208(6+ ~ 8+)',
               width: 414,
               height: 736,
-              pixelRatio: 3
+              pixelRatio: 3 / 1.15
             },
             {
               device: '1125*2001(6 ~ 8)',

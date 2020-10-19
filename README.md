@@ -9,9 +9,6 @@
 - 輸出多種常見尺寸(歡迎提供輸出尺寸)
 
 ## 📋TODO
-- **Unsplash**  
-    - Unsplash 標記創作者(全部改用[API 串接](https://unsplash.com/documentation#get-a-photo))
-    - Unsplash 圖片來源: 關鍵字隨機找圖要顯示原圖網址    
 - **i18n**
 - 圖片尺寸最適化 canvas
 - snap 圖片拖拉吸附

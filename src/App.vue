@@ -329,7 +329,7 @@ export default {
       }
     },
     updateDownloadLink () {
-      this.downloadLink = this.$refs.stage.getNode().toDataURL({ pixelRatio: 3 })
+      this.downloadLink = this.$refs.stage.getNode().toDataURL({ pixelRatio: this.outputConfig.pixelRatio })
     },
     resizeImage (e) {
       const minScale = 0.1
