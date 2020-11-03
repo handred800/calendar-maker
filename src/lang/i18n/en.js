@@ -10,7 +10,7 @@ export const locale = {
     FONT: 'font',
     FONT_SIZE: 'fontSize',
     ALIGN: 'text align',
-    ALIGN_DIRECTION: ['left','center','right','top','bottom'],
+    ALIGN_DIRECTION: ['left', 'center', 'right', 'top', 'bottom'],
     OUTPUT_SIZE: 'output size',
     TIME: 'time',
     DATE: 'date',
@@ -19,11 +19,13 @@ export const locale = {
     WEEK: 'week',
     WEEKDAY: 'weekday',
     WEEKEND: 'weekend',
+    SHOW: 'show',
+    HIDE: 'hide'
   },
   LANG: {
     EN: 'en',
     CH: 'ch',
-    NUMBER: 'num',
+    NUMBER: 'num'
   },
   tips: {
     SEARCH_KEYWORD_TIPS: 'pick a random photo using keywords',

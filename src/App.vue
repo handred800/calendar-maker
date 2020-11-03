@@ -20,23 +20,23 @@
                       :on-change="uploadImage"
                       :on-exceed="uploadImage"
                     >
-                      <el-button type="primary" icon="el-icon-upload2">上傳圖片</el-button>
+                      <el-button type="primary" icon="el-icon-upload2">{{ $t('NAME.UPLOAD') + $t('NAME.IMAGE')}}</el-button>
                       <div slot="tip" class="el-upload__tip">圖檔不大於1MB</div>
                     </el-upload>
                   </el-form-item>
-                  <el-form-item label="選擇時間">
+                  <el-form-item :label="$t('NAME.TIME')">
                     <el-date-picker
                       v-model="yearMonth"
                       type="month"
-                      placeholder="選擇年月"
+                      :placeholder="$t('NAME.YEAR')+$t('NAME.MONTH')"
                       :clearable="false"
                     >
                     </el-date-picker>
                   </el-form-item>
-                  <el-form-item label="背景色">
+                  <el-form-item :label="$t('NAME.BACKGROUND_COLOR')">
                     <el-color-picker v-model="canvasColor"></el-color-picker>
                   </el-form-item>
-                  <el-form-item label="間距">
+                  <el-form-item :label="$t('NAME.SPACING')">
                     <el-input-number
                       size="small"
                       v-model="styleConfig.gap"
@@ -45,7 +45,7 @@
                       :max="15"
                     ></el-input-number>
                   </el-form-item>
-                  <el-form-item label="字型">
+                  <el-form-item :label="$t('NAME.FONT')">
                     <el-radio-group v-model="styleConfig.font" size="medium">
                       <el-radio-button label="Noto Sans TC" style="font-family: 'Noto Sans TC'">思源黑體</el-radio-button>
                       <el-radio-button label="Noto Serif TC" style="font-family: 'Noto Serif TC'">思源宋體</el-radio-button>
@@ -53,7 +53,7 @@
                       <el-radio-button label="Zpix" style="font-family: 'Zpix'">最像素</el-radio-button>
                     </el-radio-group>
                   </el-form-item>
-                  <el-form-item label="輸出尺寸">
+                  <el-form-item :label="$t('NAME.OUTPUT_SIZE')">
                     <el-select v-model="outputConfig" value-key="device" placeholder="請選擇" @change="resetStage">
                       <el-option-group
                         v-for="group in deviceResolution"
@@ -78,21 +78,21 @@
                     >
                     </el-switch>
                   </el-form-item>
-                  <el-form-item label="對齊">
+                  <el-form-item :label="$t('NAME.ALIGN')">
                     <el-radio-group v-model="styleConfig.titleAlign" size="medium">
-                      <el-radio-button label="left">置左</el-radio-button>
-                      <el-radio-button label="center">置中</el-radio-button>
-                      <el-radio-button label="right">置右</el-radio-button>
+                      <el-radio-button label="left">{{$t('NAME.ALIGN_DIRECTION[0]')}}</el-radio-button>
+                      <el-radio-button label="center">{{$t('NAME.ALIGN_DIRECTION[1]')}}</el-radio-button>
+                      <el-radio-button label="right">{{$t('NAME.ALIGN_DIRECTION[2]')}}</el-radio-button>
                     </el-radio-group>
                   </el-form-item>
-                  <el-form-item label="類型">
+                  <el-form-item :label="$t('NAME.TYPE')">
                     <el-radio-group v-model="styleConfig.titleType" size="medium">
-                      <el-radio-button label="ch">中文</el-radio-button>
-                      <el-radio-button label="en">英文</el-radio-button>
-                      <el-radio-button label="num">數字</el-radio-button>
+                      <el-radio-button label="ch">{{$t('LANG.CH')}}</el-radio-button>
+                      <el-radio-button label="en">{{$t('LANG.EN')}}</el-radio-button>
+                      <el-radio-button label="num">{{$t('LANG.NUMBER')}}</el-radio-button>
                     </el-radio-group>
                   </el-form-item>
-                  <el-form-item label="字級大小">
+                  <el-form-item :label="$t('NAME.FONT_SIZE')">
                     <el-input-number
                       size="small"
                       v-model="styleConfig.titleFontsize"
@@ -101,12 +101,12 @@
                       :max="24"
                     ></el-input-number>
                   </el-form-item>
-                  <el-form-item label="顏色">
+                  <el-form-item :label="$t('NAME.COLOR')">
                     <el-color-picker v-model="styleConfig.titleColor"></el-color-picker>
                   </el-form-item>
                 </el-collapse-item>
                 <el-collapse-item title="日期設定" name="2">
-                  <el-form-item label="字級大小(日期)">
+                  <el-form-item :label="`${$t('NAME.COLOR')} (${$t('NAME.DATE')})`">
                     <el-input-number
                       size="small"
                       v-model="styleConfig.dateFontsize"
@@ -115,7 +115,7 @@
                       :max="20"
                     ></el-input-number>
                   </el-form-item>
-                  <el-form-item label="星期">
+                  <el-form-item :label="$t('NAME.WEEK')">
                     <el-switch
                       v-model="styleConfig.weekShow"
                       active-text="顯示"
@@ -271,6 +271,7 @@ export default {
       this.createImageObject(imageUrl)
     },
     unsplashUrlCreator: throttle(function () {
+      console.log(process.env.VUE_APP_APPKEY)
       const vm = this
       vm.imageIsLoading = true
       const config = vm.unsplashConfig
