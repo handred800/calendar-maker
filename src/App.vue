@@ -3,14 +3,18 @@
     <el-container>
       <el-header>
         <h1 class="brand">📅 月曆製造</h1>
+        <el-select style="max-width:6rem;" v-model="lang" @change="setLang" size="small">
+          <el-option value="ch" :label="$t('LANG_FULL.CH')"></el-option>
+          <el-option value="en" :label="$t('LANG_FULL.EN')"></el-option>
+        </el-select>
       </el-header>
       <el-container>
         <el-aside width="400px">
           <el-scrollbar>
             <el-form>
               <el-collapse value="0">
-                <el-collapse-item title="基本設定" name="0">
-                  <el-form-item label="圖片">
+                <el-collapse-item :title="$t('SYSTEM.SETTING_NAME.BASIC')" name="0">
+                  <el-form-item :label="$t('NAME.UPLOAD')">
                     <el-upload
                       action="/"
                       :auto-upload="false"
@@ -20,8 +24,8 @@
                       :on-change="uploadImage"
                       :on-exceed="uploadImage"
                     >
-                      <el-button type="primary" icon="el-icon-upload2">{{ $t('NAME.UPLOAD') + $t('NAME.IMAGE')}}</el-button>
-                      <div slot="tip" class="el-upload__tip">圖檔不大於1MB</div>
+                      <el-button type="primary" icon="el-icon-upload2">{{ $t('NAME.IMAGE_UPLOAD') }}</el-button>
+                      <div slot="tip" class="el-upload__tip">{{$t('TIPS.UPLOAD_LIMIT_TIPS')}}</div>
                     </el-upload>
                   </el-form-item>
                   <el-form-item :label="$t('NAME.TIME')">
@@ -46,11 +50,11 @@
                     ></el-input-number>
                   </el-form-item>
                   <el-form-item :label="$t('NAME.FONT')">
-                    <el-radio-group v-model="styleConfig.font" size="medium">
-                      <el-radio-button label="Noto Sans TC" style="font-family: 'Noto Sans TC'">思源黑體</el-radio-button>
-                      <el-radio-button label="Noto Serif TC" style="font-family: 'Noto Serif TC'">思源宋體</el-radio-button>
-                      <el-radio-button label="HunInn" style="font-family: 'HunInn'">粉圓體</el-radio-button>
-                      <el-radio-button label="Zpix" style="font-family: 'Zpix'">最像素</el-radio-button>
+                    <el-radio-group v-model="styleConfig.font" :size=" lang === 'ch' ? 'medium' : 'small'">
+                      <el-radio-button label="Noto Sans TC" style="font-family: 'Noto Sans TC'">{{$t('NAME.FONT_NAME[0]')}}</el-radio-button>
+                      <el-radio-button label="Noto Serif TC" style="font-family: 'Noto Serif TC'">{{$t('NAME.FONT_NAME[1]')}}</el-radio-button>
+                      <el-radio-button label="HunInn" style="font-family: 'HunInn'">{{$t('NAME.FONT_NAME[2]')}}</el-radio-button>
+                      <el-radio-button label="Zpix" style="font-family: 'Zpix'">{{$t('NAME.FONT_NAME[3]')}}</el-radio-button>
                     </el-radio-group>
                   </el-form-item>
                   <el-form-item :label="$t('NAME.OUTPUT_SIZE')">
@@ -69,12 +73,12 @@
                     </el-select>
                   </el-form-item>
                 </el-collapse-item>
-                <el-collapse-item title="年月設定" name="1">
+                <el-collapse-item :title="$t('SYSTEM.SETTING_NAME.YM')" name="1">
                   <el-form-item>
                     <el-switch
                       v-model="styleConfig.titleShowYear"
-                      active-text="年月"
-                      inactive-text="月"
+                      :active-text="`${$t('NAME.YEAR')} / ${$t('NAME.MONTH')}`"
+                      :inactive-text="$t('NAME.MONTH')"
                     >
                     </el-switch>
                   </el-form-item>
@@ -105,7 +109,7 @@
                     <el-color-picker v-model="styleConfig.titleColor"></el-color-picker>
                   </el-form-item>
                 </el-collapse-item>
-                <el-collapse-item title="日期設定" name="2">
+                <el-collapse-item :title="$t('SYSTEM.SETTING_NAME.DATE')" name="2">
                   <el-form-item :label="`${$t('NAME.COLOR')} (${$t('NAME.DATE')})`">
                     <el-input-number
                       size="small"
@@ -118,45 +122,45 @@
                   <el-form-item :label="$t('NAME.WEEK')">
                     <el-switch
                       v-model="styleConfig.weekShow"
-                      active-text="顯示"
-                      inactive-text="隱藏"
+                      :active-text="$t('NAME.SHOW')"
+                      :inactive-text="$t('NAME.HIDE')"
                     >
                     </el-switch>
                   </el-form-item>
-                  <el-form-item label="類型">
+                  <el-form-item :label="$t('NAME.TYPE')">
                     <el-radio-group v-model="styleConfig.weekType" size="medium">
-                      <el-radio-button label="ch">中文</el-radio-button>
-                      <el-radio-button label="en">英文</el-radio-button>
+                      <el-radio-button label="ch">{{$t('LANG.CH')}}</el-radio-button>
+                      <el-radio-button label="en">{{$t('LANG.EN')}}</el-radio-button>
                     </el-radio-group>
                   </el-form-item>
-                  <el-form-item label="顏色(平日)">
+                  <el-form-item :label="`${$t('NAME.COLOR')}(${$t('NAME.WEEKDAY')})`">
                     <el-color-picker v-model="styleConfig.weekdayColor"></el-color-picker>
                   </el-form-item>
-                  <el-form-item label="顏色(假日)">
+                  <el-form-item :label="`${$t('NAME.COLOR')}(${$t('NAME.WEEKEND')})`">
                     <el-color-picker v-model="styleConfig.weekendColor"></el-color-picker>
                   </el-form-item>
                 </el-collapse-item>
                 <el-collapse-item title="Unsplash">
-                  <p><el-link type="primary" href="https://unsplash.com/" target="_blank"><img src="https://unsplash.com/assets/core/logo-black-df2168ed0c378fa5506b1816e75eb379d06cfcd0af01e07a2eb813ae9b5d7405.svg" style="height:1em; margin-right:5px;" alt=""> Unsplash</el-link> 是一個免授權的照片分享平台</p>
-                  <el-form-item label="圖片尺寸">
+                  <p><el-link type="primary" href="https://unsplash.com/" target="_blank"><img src="https://unsplash.com/assets/core/logo-black-df2168ed0c378fa5506b1816e75eb379d06cfcd0af01e07a2eb813ae9b5d7405.svg" style="height:1em; margin-right:5px;" alt=""> Unsplash</el-link> {{$t('TIPS.UNSPLASH_DESCR_TIPS')}}</p>
+                  <el-form-item :label="$t('NAME.IMAGE_SIZE')">
                     <el-radio-group v-model="unsplashConfig.orientation" size="medium" @change="unsplashUrlCreator">
-                      <el-radio-button label="landscape">橫向(16:9)</el-radio-button>
-                      <el-radio-button label="portrait">直向(9:16)</el-radio-button>
+                      <el-radio-button label="landscape">{{$t('NAME.LANDSCAPE')}} (16:9)</el-radio-button>
+                      <el-radio-button label="portrait">{{$t('NAME.PORTRAIT')}} (9:16)</el-radio-button>
                     </el-radio-group>
                   </el-form-item>
                   <el-form-item>
                     <el-input
                       class="input-with-select"
-                      :placeholder="unsplashConfig.type === 'keyword' ? '請輸入關鍵字，建議使用英文' : '請填入Unsplash相片網址'"
+                      :placeholder="unsplashConfig.type === 'keyword' ? $t('TIPS.SEARCH_KEYWORD_TIPS') : $t('TIPS.SEARCH_SPCIFIC_TIPS')"
                       v-model="unsplashConfig.text"
                       @keyup.enter.native="unsplashUrlCreator"
                     >
                       <el-select slot="prepend" v-model="unsplashConfig.type" @change="unsplashConfig.text=''">
-                        <el-option label="關鍵字" value="keyword"></el-option>
-                        <el-option label="網址" value="url"></el-option>
+                        <el-option :label="$t('NAME.KEYWORD')" value="keyword"></el-option>
+                        <el-option :label="$t('NAME.URL')" value="url"></el-option>
                       </el-select>
                     </el-input>
-                    <div class="text-muted">輸入完後按下 Enter 送出</div>
+                    <div class="text-muted">{{$t('TIPS.SEARCH_PLACEHOLDER_TIPS')}}</div>
                   </el-form-item>
                 </el-collapse-item>
               </el-collapse>
@@ -165,7 +169,7 @@
         </el-aside>
         <el-main>
           <div>
-            <v-stage v-loading="imageIsLoading" element-loading-text="圖片載入中" ref="stage" :config="outputConfig" @wheel="resizeImage">
+            <v-stage v-loading="imageIsLoading" :element-loading-text="$t('SYSTEM.LOADING')" ref="stage" :config="outputConfig" @wheel="resizeImage">
               <v-layer>
                 <v-rect
                   :config="Object.assign({ fill: canvasColor }, outputConfig)"
@@ -197,7 +201,7 @@
               icon="el-icon-download"
               :download="`月曆 ${yearMonth.getFullYear()}-${yearMonth.getMonth()+1}`"
               @mouseenter.native="updateDownloadLink"
-              >下載</el-link>
+              >{{$t('SYSTEM.DOWNLOAD')}}</el-link>
           </div>
         </el-main>
       </el-container>
@@ -223,6 +227,7 @@ export default {
   mixins: [deviceResolution],
   data () {
     return {
+      lang: localStorage.getItem('language') || 'ch',
       imageAttr: '',
       imageIsLoading: false,
       imageConfig: {
@@ -265,6 +270,11 @@ export default {
     }
   },
   methods: {
+    setLang (val) {
+      this.$i18n.locale = val
+      // localStorage.setItem('language', val)
+      // return history.go(0)
+    },
     uploadImage (file) {
       this.unsplashConfig.text = ''
       const imageUrl = file[0] === undefined ? URL.createObjectURL(file.raw) : URL.createObjectURL(file[0])

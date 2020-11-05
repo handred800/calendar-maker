@@ -17,10 +17,13 @@ body {
     margin: 0;
     user-select: none;
 }
+
 // elementUI overwrite
 .el-header{
     background-color: $brand-color;
-    text-align: right;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 .el-aside{
     overflow-x: hidden;
@@ -62,6 +65,8 @@ body {
 .brand{
     color: #fff;
     font-size: 1.3em;
+    display: inline-block;
+    margin: 0;
 }
 .text-muted{
     color: grey;
