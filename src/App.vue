@@ -4,8 +4,8 @@
       <el-header>
         <h1 class="brand">📅 月曆製造</h1>
         <el-select style="max-width:6rem;" v-model="lang" @change="setLang" size="small">
-          <el-option value="ch" :label="$t('LANG_FULL.CH')"></el-option>
-          <el-option value="en" :label="$t('LANG_FULL.EN')"></el-option>
+          <el-option value="ch" label="中文"></el-option>
+          <el-option value="en" label="English"></el-option>
         </el-select>
       </el-header>
       <el-container>
